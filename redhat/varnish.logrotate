@@ -1,4 +1,4 @@
-/var/log/varnish/varnishncsa.log {
+/bigdisk0/varnish/log/varnish/varnishncsa.log {
   daily
   rotate 7
   compress

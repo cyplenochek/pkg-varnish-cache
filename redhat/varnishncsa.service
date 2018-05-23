@@ -7,7 +7,7 @@ RuntimeDirectory=varnishncsa
 Type=forking
 User=varnishlog
 Group=varnish
-ExecStart=/usr/bin/varnishncsa -a -w /var/log/varnish/varnishncsa.log -D
+ExecStart=/root/.software/varnish/bin/varnishncsa -a -w /bigdisk0/varnish/log/varnish/varnishncsa.log -D
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

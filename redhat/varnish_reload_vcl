@@ -35,7 +35,7 @@ VARNISH_SECRET_FILE=\"$VARNISH_SECRET_FILE\"
 
 # Fallback to the default configuration
 if [ -z "$VARNISH_VCL_CONF" ]; then
-	. /etc/sysconfig/varnish
+	. /bigdisk0/varnish/conf/sysconfig/varnish
 fi
 
 # Get warmup time from defaults or use 0 warmup

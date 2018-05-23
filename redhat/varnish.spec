@@ -102,7 +102,9 @@ sed -e "s/checking whether \$PYTHON version is >= 2.7/checking whether \$PYTHON 
 -i configure
 %endif
 
-%configure --localstatedir=/var/lib --without-rst2html
+mkdir -p /root/.software/varnish/sbin
+mkdir -p /root/.software/varnish/bin
+%configure --sysconfdir=/bigdisk0/varnish/conf/  --bindir=/root/.software/varnish/  --sbindir=/root/.software/varnish/  --localstatedir=/bigdisk0/varnish/ --without-rst2html
 
 make %{?_smp_mflags} V=1
 
@@ -120,23 +122,23 @@ make check %{?_smp_mflags} LD_LIBRARY_PATH="../../lib/libvarnish/.libs:../../lib
 %install
 export DONT_STRIP=1
 rm -rf %{buildroot}
-make install DESTDIR=%{buildroot} INSTALL="install -p"
+make install DESTDIR=%{buildroot} INSTALL="install -p" BINDIR="/root/.software/varnish/bin"
 
 # None of these for fedora
 find %{buildroot}/%{_libdir}/ -name '*.la' -exec rm -f {} ';'
 
 mkdir -p %{buildroot}/var/lib/varnish
-mkdir -p %{buildroot}/var/log/varnish
+mkdir -p %{buildroot}/bigdisk0/varnish/log/varnish
 mkdir -p %{buildroot}/var/run/varnish
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
-install -D -m 0644 etc/example.vcl %{buildroot}%{_sysconfdir}/varnish/default.vcl
-install -D -m 0644 varnish.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/varnish
+install -D -m 0644 etc/example.vcl %{buildroot}%{_sysconfdir}/default.vcl
+install -D -m 0644 varnish.logrotate %{buildroot}/etc/logrotate.d/varnish
 
 # systemd support
 %if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
 mkdir -p %{buildroot}%{_unitdir}
 install -D -m 0644 varnish.service %{buildroot}%{_unitdir}/varnish.service
-install -D -m 0644 varnish.params %{buildroot}%{_sysconfdir}/varnish/varnish.params
+install -D -m 0644 varnish.params %{buildroot}%{_sysconfdir}/varnish.params
 install -D -m 0644 varnishncsa.service %{buildroot}%{_unitdir}/varnishncsa.service
 sed -i 's,sysconfig/varnish,varnish/varnish.params,' varnish_reload_vcl
 # default is standard sysvinit
@@ -145,7 +147,7 @@ install -D -m 0644 varnish.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/varnis
 install -D -m 0755 varnish.initrc %{buildroot}%{_initrddir}/varnish
 install -D -m 0755 varnishncsa.initrc %{buildroot}%{_initrddir}/varnishncsa
 %endif
-install -D -m 0755 varnish_reload_vcl %{buildroot}%{_sbindir}/varnish_reload_vcl
+install -D -m 0755 varnish_reload_vcl %{buildroot}/root/.software/varnish/sbin/varnish_reload_vcl
 
 echo %{_libdir}/varnish > %{buildroot}%{_sysconfdir}/ld.so.conf.d/varnish-%{_arch}.conf
 
@@ -154,27 +156,27 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{_sbindir}/*
-%{_bindir}/*
+/root/.software/varnish/sbin/*
+/root/.software/varnish/bin/*
 %{_var}/lib/varnish
-%{_var}/log/varnish
+/bigdisk0/varnish/log/varnish
 %{_mandir}/man1/*.1*
 %{_mandir}/man3/*.3*
 %{_mandir}/man7/*.7*
 %{_docdir}/varnish/
-%{_datadir}/varnish
+/bigdisk0/varnish/conf
 %exclude %{_datadir}/varnish/vmodtool*
 %doc doc/html
 %doc doc/changes*.html
 %dir %{_sysconfdir}/varnish/
-%config(noreplace) %{_sysconfdir}/varnish/default.vcl
-%config(noreplace) %{_sysconfdir}/logrotate.d/varnish
+%config(noreplace) %{_sysconfdir}/default.vcl
+%config(noreplace) /etc/logrotate.d/varnish
 
 # systemd from fedora 17 and rhel 7
 %if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
 %{_unitdir}/varnish.service
 %{_unitdir}/varnishncsa.service
-%config(noreplace)%{_sysconfdir}/varnish/varnish.params
+%config(noreplace)%{_sysconfdir}/varnish.params
 
 # default is standard sysvinit
 %else

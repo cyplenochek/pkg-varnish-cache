@@ -24,15 +24,15 @@
 retval=0
 pidfile="/var/run/varnishncsa.pid"
 lockfile="/var/lock/subsys/varnishncsa"
-logfile="/var/log/varnish/varnishncsa.log"
+logfile="/bigdisk0/varnish/log/varnish/varnishncsa.log"
 
-exec="/usr/bin/varnishncsa"
+exec="/root/.software/varnish/bin/varnishncsa"
 prog="varnishncsa"
 
 DAEMON_OPTS="-a -w $logfile -D -P $pidfile"
 
 # Include varnishncsa defaults
-[ -e /etc/sysconfig/varnishncsa ] && . /etc/sysconfig/varnishncsa
+[ -e /bigdisk0/varnish/conf/sysconfig/varnishncsa ] && . /bigdisk0/varnish/conf/sysconfig/varnishncsa
 
 start() {
 
